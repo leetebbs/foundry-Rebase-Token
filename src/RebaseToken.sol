@@ -5,12 +5,12 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-/*
+/**
 * @title RebaseToken
 * @author Tebbo
 * @notice This is a crosschain rebase token that incentivises users to deposit into a vault
 * @notice The interest in the smartcontract can only decrease
-- @notice Each user will have their own interest rate which will be the global interest rate at the time of depositing.
+* @notice Each user will have their own interest rate which will be the global interest rate at the time of depositing.
 */
 
 contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
@@ -38,7 +38,7 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
         _grantRole(MINT_AND_BURN_ROLE, _account);
     }
 
-    /*
+    /**
     * @notice Set the new interest rate
     * @param _newInterestRate The new interest rate to set
     * @dev The interest rate can only decrease
@@ -52,8 +52,8 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
         emit InterestRateSet(_newInterestRate);
     }
 
-    /*
-    * @notice Get the principle balance of a user
+    /**
+     * @notice Get the principle balance of a user
      * @param _user The address of the user
      * @return The principle balance of the user
      */
@@ -93,11 +93,11 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
         return linearInterest;
     }
 
-    /*
-    * @notice Calculate the accumulated interest for a user since their last update
-    * @param _user The address of the user
-    * @return The accumulated interest for the user since their last update
-    */
+    /**
+     * @notice Calculate the accumulated interest for a user since their last update
+     * @param _user The address of the user
+     * @return The accumulated interest for the user since their last update
+     */
     function balanceOf(address _user) public view override returns (uint256) {
         return super.balanceOf(_user) * _calculatedUserAccumulatedInterestSinceLastUpdate(_user) / PRECISION_FACTOR;
     }
@@ -139,7 +139,7 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
         return super.transferFrom(_sender, _recipient, _amount);
     }
 
-    /*
+    /**
     * @notice Mint the accrued interest for a user
     * @param _user The address of the user
     * @dev This function is called when a user mints tokens or deposits into the vault
@@ -159,7 +159,7 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
     // **  Getter functions
     // *********************************************
 
-    /*
+    /**
     * @notice get the interest rate for a user
     * @param _user The address of the user
     * @return The interest rate for the user
@@ -168,8 +168,8 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
         return s_userInterestRate[_user];
     }
 
-    /*
-    * @notice Get the interest rate that is currently set for the contract. Any futture depositors will recieve
+    /**
+    * @notice Get the interest rate that is currently set for the contract. Any future depositors will receive
     */
     function getIterestRate() external view returns (uint256) {
         return s_interestRate;
