@@ -20,7 +20,7 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
 
     error RebaseToken__InterestRateCanOnlyDecrease(uint256 currentInterestRate, uint256 newInterestRate);
 
-    uint256 private s_interestRate = 5e10;
+    uint256 private s_interestRate = (5 * PRECISION_FACTOR) / 1e8;
     bytes32 private constant MINT_AND_BURN_ROLE = keccak256("MINT_AND_BURN_ROLE");
     uint256 private constant PRECISION_FACTOR = 1e18; // To avoid precision issues with interest rate calculations
     mapping(address => uint256) private s_userInterestRate;
@@ -61,10 +61,17 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
         return super.balanceOf(_user);
     }
 
-    function mint(address _to, uint256 _amount) external onlyRole(MINT_AND_BURN_ROLE) {
+    /// @notice Mints new tokens for a given address. Called when a user either deposits or bridges tokens to this chain.
+    /// @param _to The address to mint the tokens to.
+    /// @param _value The number of tokens to mint.
+    /// @param _userInterestRate The interest rate of the user. This is either the contract interest rate if the user is depositing or the user's interest rate from the source token if the user is bridging.
+    /// @dev this function increases the total supply.
+    function mint(address _to, uint256 _value, uint256 _userInterestRate) public onlyRole(MINT_AND_BURN_ROLE) {
+        // Mints any existing interest that has accrued since the last time the user's balance was updated.
         _mintAccruedInterest(_to);
-        s_userInterestRate[_to] = s_interestRate;
-        _mint(_to, _amount);
+        // Sets the users interest rate to either their bridged value if they are bridging or to the current interest rate if they are depositing.
+        s_userInterestRate[_to] = _userInterestRate;
+        _mint(_to, _value);
     }
 
     /**
@@ -76,9 +83,9 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
      * @dev The user's interest rate is set to the current global interest rate
      */
     function burn(address _from, uint256 _amount) external onlyRole(MINT_AND_BURN_ROLE) {
-        if (_amount == type(uint256).max) {
-            _amount = balanceOf(_from);
-        }
+        // if (_amount == type(uint256).max) {
+        //     _amount = balanceOf(_from);
+        // }
         _mintAccruedInterest(_from);
         _burn(_from, _amount);
     }
@@ -171,7 +178,7 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
     /**
     * @notice Get the interest rate that is currently set for the contract. Any future depositors will receive
     */
-    function getIterestRate() external view returns (uint256) {
+    function getInterestRate() external view returns (uint256) {
         return s_interestRate;
     }
 }
