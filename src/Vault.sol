@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.24;
 
-import {IRebaseToken} from "./IRebaseToken.sol";
+import {IRebaseToken} from "./Interfaces/IRebaseToken.sol";
 
 contract Vault  {
 
@@ -25,7 +25,8 @@ contract Vault  {
     * @dev Deposit Ether into the vault and mint corresponding RebaseTokens.
     */
     function deposit() external payable {
-       i_rebaseToken.mint(msg.sender, msg.value, i_rebaseToken.getInterestRate());
+        uint256 interestRate = i_rebaseToken.getInterestRate();
+       i_rebaseToken.mint(msg.sender, msg.value, interestRate);
        emit Deposit(msg.sender, msg.value);
     }
 

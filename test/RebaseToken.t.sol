@@ -6,7 +6,7 @@ import {console, Test} from "forge-std/Test.sol";
 import {RebaseToken} from "../src/RebaseToken.sol";
 import {Vault} from "../src/Vault.sol";
 
-import {IRebaseToken} from "../src/IRebaseToken.sol";
+import {IRebaseToken} from "../src/Interfaces/IRebaseToken.sol";
 
 contract RebaseTokenTest is Test {
     RebaseToken public rebaseToken;
