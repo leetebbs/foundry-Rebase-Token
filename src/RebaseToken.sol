@@ -34,7 +34,7 @@ contract RebaseToken is ERC20, Ownable(msg.sender), AccessControl {
 
     constructor() ERC20("Rebase Token", "RBT") {}
 
-    function grantBurnAdMintRole(address _account) external onlyOwner {
+    function grantBurnAndMintRole(address _account) external onlyOwner {
         _grantRole(MINT_AND_BURN_ROLE, _account);
     }
 
